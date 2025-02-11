@@ -54,6 +54,9 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+        if ($post->user_id != Auth::id()) {
+            return abort('403');
+        }
         return view('post.show',['post' => $post]);
     }
 
@@ -62,6 +65,9 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        if ($post->user_id != Auth::id()) {
+            return abort('403');
+        }
         $categories = Category::where('user_id',Auth::id())->get();
         return view('post.update',['post'=>$post, 'categories' => $categories]);
     }
@@ -71,6 +77,10 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
+        if ($post->user_id != Auth::id()) {
+            return abort('403');
+        }
+
          $request->validate([
             'title' => ['required', Rule::unique('posts')->ignore($post->id)],
             'description' => 'required',
@@ -88,6 +98,9 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        if ($post->user_id != Auth::id()) {
+            return abort('403');
+        }
         $post->delete();
         $posts = Post::where('user_id', Auth::id())->get();
 
